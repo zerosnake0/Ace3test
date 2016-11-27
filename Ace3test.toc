@@ -1,0 +1,7 @@
+## Interface: 11200
+
+## Title: Ace3 (Vanilla) Test
+## Author: zerosnake0
+## Deps: Ace3
+
+Ace3test.xml
