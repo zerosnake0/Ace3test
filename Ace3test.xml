@@ -4,4 +4,7 @@
 	<Script file="AceConsole-3.0.lua"/>
 	<Script file="AceAddon-3.0.lua"/>
 	<Script file="AceComm-3.0.lua"/>
+	<Script file="AceEvent-3.0.lua"/>
+	<Script file="AceBucket-3.0.lua"/>
+	<Script file="AceConfig-3.0.lua"/>
 </Ui>

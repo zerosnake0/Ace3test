@@ -2,7 +2,8 @@ function Ace3test:TestAceConsole()
 
 	self:TestBegin("AceConsole")
 
-	local AceConsole, minor = assert(LibStub("AceConsole-3.0"))
+	local AceConsole = assert(LibStub("AceConsole-3.0"))
+
 	-- Called from library
 	self:Print("> AceConsole:Print(1,2,3,4,5,6,7,8,9,10)")
 	AceConsole:Print(1,2,3,4,5,6,7,8,9,10)
@@ -42,9 +43,10 @@ function Ace3test:TestAceConsole()
 	AceConsole:Printf("a\\nb => a\nb")
 
 	local function donothing() end
+	local cmd_name = "donothing"
 	-- RegisterChatCommand
 	self:Print("> RegisterChatCommand")
-	AceConsole:RegisterChatCommand("donothing", donothing)
+	AceConsole:RegisterChatCommand(cmd_name, donothing)
 	local found = false
 	for k,v in AceConsole:IterateChatCommands() do
 		if k == "donothing" then
@@ -57,14 +59,25 @@ function Ace3test:TestAceConsole()
 	assert(SlashCmdList["ACECONSOLE_DONOTHING"], "\"ACECONSOLE_DONOTHING\" not found in SlashCmdList")
 	assert(_G["SLASH_ACECONSOLE_DONOTHING1"], "\"SLASH_ACECONSOLE_DONOTHING1\" not found in global")
 
+	local found = false
+	for k,v in AceConsole:IterateChatCommands() do
+		if k == cmd_name then found = true break end
+	end
+	assert(found, "The command is not registered")
+
 	-- UnregisterChatCommand
 	self:Print("> UnregisterChatCommand")
-	AceConsole:UnregisterChatCommand("donothing")
+	AceConsole:UnregisterChatCommand(cmd_name)
 	for k,v in AceConsole:IterateChatCommands() do
 		assert(k ~= "donothing", "The command is not unregistered")
 	end
 	assert(SlashCmdList["ACECONSOLE_DONOTHING"] == nil, "\"ACECONSOLE_DONOTHING\" still in SlashCmdList")
 	assert(_G["SLASH_ACECONSOLE_DONOTHING1"] == nil, "\"SLASH_ACECONSOLE_DONOTHING1\" still in global")
+
+	local found = false
+	for k,v in AceConsole:IterateChatCommands() do
+		assert(k ~= cmd_name, "The command is not unregistered")
+	end
 
 	-- GetArgs
 	self:Print("> GetArgs")

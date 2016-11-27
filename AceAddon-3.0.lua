@@ -6,12 +6,12 @@ function Ace3test:TestAceAddon()
 	self:TestBegin("AceAddon")
 
 	if count > 0 then
-		self:Print("Skipping, please reload UI if you wanna test again")
+		self:LogError("Skipping, please reload UI if you wanna test again")
 		return
 	end
 	count = count + 1
 
-	local AceAddon, minor = assert(LibStub("AceAddon-3.0"))
+	local AceAddon = assert(LibStub("AceAddon-3.0"))
 
 	do
 		self:Print("> Test create addon.")
