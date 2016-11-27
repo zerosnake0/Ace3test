@@ -6,6 +6,7 @@ local AceConfigRegistry = assert(LibStub("AceConfigRegistry-3.0"))
 --local AceConfigDialog = assert(LibStub("AceConfigDialog-3.0"))
 
 local tgetn = table.getn
+local strtrim = strtrim
 
 local v
 
@@ -56,6 +57,62 @@ local function exe(info, ...)
 	v = true
 end
 
+local select_opts = {a=1,b=2,c=3}
+function Ace3test:select()
+	return select_opts
+end
+
+local select_item
+function Ace3test:select_get(info, ...)
+	assert(tgetn(arg) == 0)
+	return select_item
+end
+
+function Ace3test:select_set(info, ...)
+	assert(tgetn(arg) == 1)
+	assert(select_opts[arg[1]])
+	select_item = arg[1]
+end
+
+function Ace3test:multiselect()
+	return select_opts
+end
+
+local multiselect_item = {}
+function Ace3test:multiselect_get(info, ...)
+	assert(tgetn(arg) == 1)
+	assert(select_opts[arg[1]])
+	return multiselect_item[arg[1]]
+end
+
+function Ace3test:multiselect_set(info, ...)
+	assert(tgetn(arg) == 2)
+	assert(select_opts[arg[1]])
+	multiselect_item[arg[1]] = arg[2]
+end
+
+local color = {}
+local function color_get(info, ...)
+	-- coding not finished yet in AceConfigCmd
+	for k,v in arg do
+		dbg(k,v)
+	end
+end
+
+local function color_set(info, ...)
+	assert(tgetn(arg) == 4)
+	for i=1,tgetn(arg) do
+		assert(arg[i] >= 0 and arg[i] <= 1)
+		color[i] = arg[i]
+	end
+end
+
+local keybinding_val
+local function keybinding_set(info, ...)
+	assert(tgetn(arg) == 1)
+	keybinding_val = arg[1]
+end
+
 local opt = {
 	type = "group",
 	set = set_base,
@@ -72,7 +129,7 @@ local opt = {
 			name = "toggle depth 1",
 			desc = "toggle depth 1",
 			type = "toggle",
-			handler = app,
+			handler = app,	-- with handler
 			get = "get_toggle",
 			set = "set_toggle",
 		},
@@ -103,7 +160,50 @@ local opt = {
 					tristate = true,
 				}
 			}
+		},
+		-- select
+		select = {
+			name = "Select",
+			type = "select",
+			values = "select",
+			get = "select_get",
+			set = "select_set",
+			validate = false,
+		},
+		-- multiselect
+		multiselect = {
+			name = "Multiselect",
+			type = "multiselect",
+			values = "multiselect",
+			get = "multiselect_get",
+			set = "multiselect_set",
+			validate = false,
+		},
+		-- color
+		rgb = {
+			name = "RGB",
+			type = "color",
+			validate = false,
+			get = color_get,
+			set = color_set,
+		},
+		rgba = {
+			name = "RGBA",
+			type = "color",
+			validate = false,
+			hasAlpha = true,
+			--get = color_get,	-- coding not finished yet in AceConfigCmd
+			set = color_set,
+		},
+		-- keybinding
+		keybinding = {
+			name = "Keybinding",
+			type = "keybinding",
+			validate = false,
+			--get = nil,	-- coding not finished yet in AceConfigCmd
+			set = keybinding_set,
 		}
+
 	},
 	plugins = {	-- test plugins
 		plugin1 = {
@@ -114,8 +214,9 @@ local opt = {
 			},
 			plugcmd2 = {
 				name="PluggedCmd2",
-				desc="WooTwo",
+				desc="YOU SHOULD NOT SEE THIS",
 				type="toggle",
+				hidden=true,
 			}
 		},
 		plugin2 = {
@@ -128,7 +229,7 @@ local opt = {
 				type="toggle",
 			},
 		}
-	}
+	},
 }
 
 local function reset()
@@ -136,20 +237,40 @@ local function reset()
 	get_called = 0
 	validate_called = 0
 	v = nil
+	select_item = nil
+	for k,v in select_opts do
+		multiselect_item[k] = nil
+	end
+	for i=1,4 do
+		color[i] = nil
+	end
+end
+
+local slash_cmd = "A3TOPT"
+-- the registered app name must be like "mylib-1.0"
+local app_name = "Ace3test-1.0"
+
+function Ace3test:A3TOPT(input)
+	-- Ace3v: currently unable to test, need to test with AceGUI
+	--if not input or strtrim(input) == "" then
+	--	AceConfigDialog:Open("MyOptions")
+	--else
+		AceConfigCmd.HandleCommand(self, slash_cmd, app_name, input)
+	--end
 end
 
 function Ace3test:TestAceConfig()
 	self:TestBegin("AceConfig")
 	assert(AceConfig)
 
-	local slash_cmd = "A3TOPT"
-	-- the registered app name must be like "mylib-1.0"
-	local app_name = "Ace3test-1.0"
-	AceConfig:RegisterOptionsTable(app_name, opt, slash_cmd)
-	
-	
-	local handler = SlashCmdList["ACECONSOLE_" .. slash_cmd]
+	--AceConfig:RegisterOptionsTable(app_name, opt, slash_cmd)
+	--assert(AceConfigCmd:GetChatCommandOptions(slash_cmd) == app_name)
 
+	-- create the command seperately so we can use our own handler
+	AceConfig:RegisterOptionsTable(app_name, opt)
+	self:RegisterChatCommand(slash_cmd, slash_cmd)
+
+	local handler = assert(SlashCmdList["ACECONSOLE_" .. slash_cmd])
 	-- input
 	self:Print("> Test input")
 	reset()
@@ -158,18 +279,18 @@ function Ace3test:TestAceConfig()
 	assert(set_called == 1)
 	assert(get_called == 0)
 	assert(validate_called == 0)
-	
+
 	-- execute
 	self:Print("> Test execute")
 	reset()
-	handler("execute blabla")
+	AceConfigCmd:HandleCommand(slash_cmd, app_name, "execute blabla") -- test with AceConfigCmd
 	assert(v == true)
-	
+
 	-- toggle
-	self:Print("> Test toggle depth 1")
+	self:Print("> Test toggle (with handler)")
 
 	reset()
-	handler("toggle")
+	handler("toggle")	-- test with slash handler
 	assert(v == true)
 	handler("toggle")
 	assert(v == false)
@@ -179,13 +300,13 @@ function Ace3test:TestAceConfig()
 	assert(v == false)
 	handler("toggle invalid")
 	assert(v == false)
-	
+
 	assert(set_called == 4)
 	assert(get_called == 2)
 	assert(validate_called == 4)
-	
+
 	-- toggle inside
-	self:Print("> Test toggle depth 2")
+	self:Print("> Test toggle (subcommand)")
 
 	reset()
 	handler("moreoptions toggle")
@@ -200,14 +321,14 @@ function Ace3test:TestAceConfig()
 	assert(v == false)
 	handler("moreoptions toggle invalid")
 	assert(v == false)
-	
+
 	assert(set_called == 5)
 	assert(get_called == 3)
 	assert(validate_called == 5)
-	
+
 	-- plugin
 	self:Print("> Test plugin")
-	
+
 	reset()
 	handler("plugcmd")
 	assert(v == true)
@@ -219,11 +340,91 @@ function Ace3test:TestAceConfig()
 	assert(v == false)
 	handler("p3cmd invalid")
 	assert(v == false)
-	
+
 	assert(set_called == 4)
 	assert(get_called == 2)
 	assert(validate_called == 4)
-	
-	
+
+	-- select
+	self:Print("> Test select")
+
+	reset()
+	handler("select")
+	assert(select_item == nil)
+	handler("select a")
+	assert(select_item == "a")
+	handler("select b")
+	assert(select_item == "b")
+	handler("select c")
+	assert(select_item == "c")
+	handler("select d")
+	assert(select_item == "c")
+
+	-- multiselect
+	self:Print("> Test multiselect")
+
+	reset()
+	handler("multiselect")
+	for k,v in select_opts do
+		assert(multiselect_item[k] == nil)
+	end
+	handler("multiselect a")
+	handler("multiselect b")
+	handler("multiselect c")
+	for k,v in select_opts do
+		assert(multiselect_item[k])
+	end
+	handler("multiselect a b c")
+	for k,v in select_opts do
+		assert(not multiselect_item[k])
+	end
+
+	-- color
+	self:Print("> Test color")
+
+	reset()
+	handler("rgb")
+	for i=1,4 do
+		assert(color[i] == nil)
+	end
+	handler("rgb ffffff")
+	for i=1,4 do
+		assert(color[i] == 1)
+	end
+	handler("rgb 000000")
+	for i=1,3 do
+		assert(color[i] == 0)
+	end
+	assert(color[4] == 1)
+
+	reset()
+	handler("rgba")
+	for i=1,4 do
+		assert(color[i] == nil)
+	end
+	handler("rgba ffffffff")
+	for i=1,4 do
+		assert(color[i] == 1)
+	end
+	handler("rgba 00000000")
+	for i=1,4 do
+		assert(color[i] == 0)
+	end
+
+	-- keybinding
+	self:Print("> Test keybinding")
+
+	reset()
+	handler("keybinding")
+	assert(keybinding_val == nil)
+	handler("keybinding k")
+	assert(keybinding_val == 'K')
+	handler("keybinding ctrl-r")
+	assert(keybinding_val == 'CTRL-R')
+	handler("keybinding ctrl-alt-b")
+	assert(keybinding_val == 'ALT-CTRL-B')
+	handler("keybinding ctrl-alt-shift-J")
+	assert(keybinding_val == 'ALT-CTRL-SHIFT-J')
+
 	self:TestEnd("AceConfig")
 end
