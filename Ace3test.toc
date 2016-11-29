@@ -3,5 +3,7 @@
 ## Title: Ace3 (Vanilla) Test
 ## Author: zerosnake0
 ## Deps: Ace3
+##
+## SavedVariables: Ace3testDB, Ace3testDBLogout
 
 Ace3test.xml

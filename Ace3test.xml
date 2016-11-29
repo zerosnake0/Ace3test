@@ -7,4 +7,5 @@
 	<Script file="AceEvent-3.0.lua"/>
 	<Script file="AceBucket-3.0.lua"/>
 	<Script file="AceConfig-3.0.lua"/>
+	<Script file="AceDB-3.0.lua"/>
 </Ui>

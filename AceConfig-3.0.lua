@@ -113,6 +113,11 @@ local function keybinding_set(info, ...)
 	keybinding_val = arg[1]
 end
 
+local range_v
+local range_min
+local range_max
+local range_step
+
 local opt = {
 	type = "group",
 	set = set_base,
@@ -161,6 +166,24 @@ local opt = {
 				}
 			}
 		},
+		-- range
+		range = {
+			name = "Range",
+			type = "range",
+			-- the current setting is for number only
+			--min = function() return range_min end,
+			--max = function() return range_max end,
+			--step = function() return range_step end,
+			min = 1,
+			max = 10,
+			step = 2,
+			--get = 	-- coding not finished yet in AceConfigCmd
+			set = function(info, ...)
+				assert(tgetn(arg) == 1)
+				range_v = arg[1]
+			end,
+			validate = false,
+		},
 		-- select
 		select = {
 			name = "Select",
@@ -186,6 +209,7 @@ local opt = {
 			validate = false,
 			get = color_get,
 			set = color_set,
+			hasAlpha = false,
 		},
 		rgba = {
 			name = "RGBA",
@@ -244,18 +268,25 @@ local function reset()
 	for i=1,4 do
 		color[i] = nil
 	end
+	keybinding_val = nil
+	range_min = 5
+	range_max = 10
+	range_step = 1
+	range_v = nil
 end
 
 local slash_cmd = "A3TOPT"
 -- the registered app name must be like "mylib-1.0"
 local app_name = "Ace3test-1.0"
 
-function Ace3test:A3TOPT(input)
+function Ace3test:A3TOPT(input, a1, a2)
+	assert(a1 == slash_cmd)
+	assert(a2 == app_name)
 	-- Ace3v: currently unable to test, need to test with AceGUI
 	--if not input or strtrim(input) == "" then
 	--	AceConfigDialog:Open("MyOptions")
 	--else
-		AceConfigCmd.HandleCommand(self, slash_cmd, app_name, input)
+		self:HandleCommand(slash_cmd, app_name, input)
 	--end
 end
 
@@ -263,12 +294,17 @@ function Ace3test:TestAceConfig()
 	self:TestBegin("AceConfig")
 	assert(AceConfig)
 
-	--AceConfig:RegisterOptionsTable(app_name, opt, slash_cmd)
-	--assert(AceConfigCmd:GetChatCommandOptions(slash_cmd) == app_name)
+	-- There are two ways of registering
+	-- 1. use RegisterOptionsTable, the handler is AceConfigCmd.HandleCommand
+	--self:RegisterOptionsTable(app_name, opt, slash_cmd)
 
-	-- create the command seperately so we can use our own handler
-	AceConfig:RegisterOptionsTable(app_name, opt)
-	self:RegisterChatCommand(slash_cmd, slash_cmd)
+	-- 2. use RegisterOptionsTable with CreateChatCommand, we can define our
+	--    own handler
+	self:RegisterOptionsTable(app_name, opt)
+	self:CreateChatCommand(slash_cmd, app_name, "A3TOPT")
+
+
+	assert(AceConfigCmd:GetChatCommandOptions(slash_cmd) == app_name)
 
 	local handler = assert(SlashCmdList["ACECONSOLE_" .. slash_cmd])
 	-- input
@@ -283,7 +319,7 @@ function Ace3test:TestAceConfig()
 	-- execute
 	self:Print("> Test execute")
 	reset()
-	AceConfigCmd:HandleCommand(slash_cmd, app_name, "execute blabla") -- test with AceConfigCmd
+	self:HandleCommand(slash_cmd, app_name, "execute blabla") -- test with self
 	assert(v == true)
 
 	-- toggle
@@ -344,6 +380,22 @@ function Ace3test:TestAceConfig()
 	assert(set_called == 4)
 	assert(get_called == 2)
 	assert(validate_called == 4)
+
+	-- range
+	self:Print("> Test range")
+	reset()
+	handler("range")
+	assert(range_v == nil)
+	handler("range 1")
+	assert(range_v == 1)
+	handler("range 2")
+	assert(range_v == 1)
+	handler("range 5")
+	assert(range_v == 5)
+	handler("range 10")
+	assert(range_v == 9)
+	handler("range 11")
+	assert(range_v == 9)
 
 	-- select
 	self:Print("> Test select")

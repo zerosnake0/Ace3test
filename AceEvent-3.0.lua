@@ -6,6 +6,7 @@ local recv_count
 function Ace3test:CHAT_MSG_SYSTEM(...)
 	assert(event == "CHAT_MSG_SYSTEM")
 	assert(tgetn(arg) == 1)
+	assert(arg[i] == nil)
 	recv_count = recv_count + 1
 	if recv_count == send_count then
 		self:UnregisterEvent("CHAT_MSG_SYSTEM")
