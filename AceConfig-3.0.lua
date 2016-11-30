@@ -277,7 +277,7 @@ end
 
 local slash_cmd = "A3TOPT"
 -- the registered app name must be like "mylib-1.0"
-local app_name = "Ace3test-1.0"
+local app_name = "Ace3testDB-1.0"
 
 function Ace3test:A3TOPT(input, a1, a2)
 	assert(a1 == slash_cmd)
@@ -301,7 +301,7 @@ function Ace3test:TestAceConfig()
 	-- 2. use RegisterOptionsTable with CreateChatCommand, we can define our
 	--    own handler
 	self:RegisterOptionsTable(app_name, opt)
-	self:CreateChatCommand(slash_cmd, app_name, "A3TOPT")
+	self:CreateChatCommand(slash_cmd, app_name, slash_cmd)
 
 
 	assert(AceConfigCmd:GetChatCommandOptions(slash_cmd) == app_name)

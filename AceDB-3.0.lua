@@ -259,16 +259,17 @@ function Ace3test:TestAceDB()
 		testdb:RegisterCallback("OnDatabaseReset", OnCallback, "OnDatabaseReset")
 		testdb:RegisterCallback("OnNewProfile", OnCallback, "OnNewProfile")
 		testdb:RegisterCallback("OnProfileReset", OnCallback, "OnProfileReset")
-		-- dbreset, change
+		-- dbreset, change(on Healers)
 		testdb:ResetDB("Healers")
-		-- change
+		-- change(on Tanks), new (on Healers)
 		testdb:SetProfile("Tanks")
-		-- copy
+		-- copy(on Healers), new (on Tanks)
 		testdb:CopyProfile("Healers")
 		-- delete
 		testdb:DeleteProfile("Healers")
 		-- reset
 		testdb:ResetProfile()
+
 		assert(triggers.OnProfileChanged == 2)
 		assert(triggers.OnDatabaseReset == 1)
 		assert(triggers.OnProfileDeleted == 1)
@@ -692,10 +693,12 @@ function Ace3test:TestAceDB()
 
 				Ace3testDBLogout = true
 			end)
+			self:LogWarning("Please reload and test again")
 		end
 	else
-		self:Print("|cFFFFFF00Please reload and test again")
+		self:LogWarning("Please reload and test again")
 	end
+
 
 	self:TestEnd("AceDB")
 end

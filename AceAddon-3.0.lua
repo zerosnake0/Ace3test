@@ -6,8 +6,8 @@ function Ace3test:TestAceAddon()
 	self:TestBegin("AceAddon")
 
 	if count > 0 then
-		self:LogError("Skipping, please reload UI if you wanna test again")
-		return
+		self:LogWarning("Skipping, please reload UI if you wanna test again")
+		return false
 	end
 	count = count + 1
 

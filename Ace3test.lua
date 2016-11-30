@@ -4,7 +4,9 @@ Ace3test = LibStub("AceAddon-3.0"):NewAddon("Ace3test",
 	"AceEvent-3.0",
 	"AceBucket-3.0",
 	"AceConfig-3.0",
-	"AceConfigCmd-3.0"
+	"AceConfigCmd-3.0",
+	"AceSerializer-3.0",
+	"AceHook-3.0"
 )
 
 local tests = {
@@ -14,7 +16,12 @@ local tests = {
 	"TestAceBucket",
 	"TestAceConfig",
 	"TestAceDB",
-	"TestAceComm"	-- takes long time, make it last
+	"TestAceDBOptions",
+	"TestAceLocale30",
+	"TestAceLocale31",
+	"TestAceSerializaer", 	-- this may freeze the PC for some seconds
+	"TestAceHook",
+	"TestAceComm"			-- takes long time, make it last
 }
 
 local tgetn = table.getn
@@ -53,6 +60,10 @@ end
 
 function Ace3test:LogError(...)
 	self:Print('|cFFFF4444', unpack(arg))
+end
+
+function Ace3test:LogWarning(...)
+	self:Print('|cFFFFFF00', unpack(arg))
 end
 
 function Ace3test:LogSuccess(...)
