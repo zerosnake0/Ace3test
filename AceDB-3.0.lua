@@ -1,3 +1,5 @@
+local AceCore = assert(LibStub("AceCore-3.0"))
+local _G = AceCore._G
 local AceDB = assert(LibStub("AceDB-3.0"))
 
 local tinsert = table.insert

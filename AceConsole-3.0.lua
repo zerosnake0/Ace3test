@@ -1,3 +1,6 @@
+local AceCore = assert(LibStub("AceCore-3.0"))
+local _G = AceCore._G
+
 function Ace3test:TestAceConsole()
 
 	self:TestBegin("AceConsole")

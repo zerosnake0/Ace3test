@@ -1,3 +1,7 @@
+local AceCore = assert(LibStub("AceCore-3.0"))
+local _G = AceCore._G
+local wipe = AceCore.wipe
+
 local AceLocale = assert(LibStub("AceLocale-3.1"))
 
 local err
