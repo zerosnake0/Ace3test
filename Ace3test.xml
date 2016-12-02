@@ -13,4 +13,5 @@
 	<Script file="AceLocale-3.1.lua"/>
 	<Script file="AceSerializaer-3.0.lua"/>
 	<Script file="AceHook-3.0.lua"/>
+	<Script file="AceTab-3.0.lua"/>
 </Ui>

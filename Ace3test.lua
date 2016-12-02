@@ -21,6 +21,7 @@ local tests = {
 	"TestAceLocale31",
 	"TestAceSerializaer", 	-- this may freeze the PC for some seconds
 	"TestAceHook",
+	"TestAceTab",			-- test by hand
 	"TestAceComm"			-- takes long time, make it last
 }
 
