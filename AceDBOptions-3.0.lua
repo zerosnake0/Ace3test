@@ -55,28 +55,27 @@ function Ace3test:TestAceDBOptions()
 		local a1, a2, a3, a4, a5
 
 		local function OnCallback(message, db, profile)
-			if db == testdb then
-				if message == "OnProfileChanged" then
-					a1 = profile
-				elseif message == "OnProfileDeleted" then
-					a2 = profile
-				elseif message == "OnProfileCopied" then
-					a3 = profile
-				elseif message == "OnNewProfile" then
-					a4 = profile
-				elseif message == "OnProfileReset" then
-					a5 = profile
-				end
-				triggers[message] = triggers[message] and triggers[message] + 1 or 1
+			assert(db == testdb)
+			if message == "OnProfileChanged" then
+				a1 = profile
+			elseif message == "OnProfileDeleted" then
+				a2 = profile
+			elseif message == "OnProfileCopied" then
+				a3 = profile
+			elseif message == "OnNewProfile" then
+				a4 = profile
+			elseif message == "OnProfileReset" then
+				a5 = profile
 			end
+			triggers[message] = triggers[message] and triggers[message] + 1 or 1
 		end
 
-		testdb:RegisterCallback("OnProfileChanged", OnCallback, "OnProfileChanged")
-		testdb:RegisterCallback("OnProfileDeleted", OnCallback, "OnProfileDeleted")
-		testdb:RegisterCallback("OnProfileCopied", OnCallback, "OnProfileCopied")
-		testdb:RegisterCallback("OnDatabaseReset", OnCallback, "OnDatabaseReset")
-		testdb:RegisterCallback("OnNewProfile", OnCallback, "OnNewProfile")
-		testdb:RegisterCallback("OnProfileReset", OnCallback, "OnProfileReset")
+		testdb:RegisterCallback("OnProfileChanged", OnCallback)
+		testdb:RegisterCallback("OnProfileDeleted", OnCallback)
+		testdb:RegisterCallback("OnProfileCopied", OnCallback)
+		testdb:RegisterCallback("OnDatabaseReset", OnCallback)
+		testdb:RegisterCallback("OnNewProfile", OnCallback)
+		testdb:RegisterCallback("OnProfileReset", OnCallback)
 
 		testdb:ResetDB("Healers")
 		assert(triggers.OnProfileChanged == 1)

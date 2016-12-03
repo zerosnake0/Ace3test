@@ -86,15 +86,19 @@ function Ace3test:TestAceDB()
 	do
 		self:Print("> Test OnProfileChanged")
 
-		local testdb = LibStub("AceDB-3.0"):New({})
+		local t = {}
+		local testdb = LibStub("AceDB-3.0"):New(t)
+		dbg('-->'..tostring(t))
+		dbg(tostring(testdb))
 		local triggered = nil
-		local function OnProfileChanged(event, db, profile)
+		local function OnProfileChanged(a1, event, db, profile)
 			assert(event == "OnProfileChanged")
+			assert(a1 == nil)
 			assert(db == testdb)
 			assert(profile == "Healers")
 			triggered = true
 		end
-		testdb:RegisterCallback("OnProfileChanged", OnProfileChanged, "OnProfileChanged")
+		testdb:RegisterCallback("OnProfileChanged", OnProfileChanged, nil)
 		testdb:SetProfile("Healers")
 		assert(triggered)
 	end
@@ -238,29 +242,29 @@ function Ace3test:TestAceDB()
 
 		local triggers = {}
 
-		local function OnCallback(message, db, profile)
-			if db == testdb then
-				if message == "OnProfileChanged" then
-					assert(profile == "Healers" or profile == "Tanks")
-				elseif message == "OnProfileDeleted" then
-					assert(profile == "Healers")
-				elseif message == "OnProfileCopied" then
-					assert(profile == "Healers")
-				elseif message == "OnNewProfile" then
-					assert(profile == "Healers" or profile == "Tanks")
-				elseif message == "OnProfileReset" then
-					assert(profile == "Tanks")
-				end
-				triggers[message] = triggers[message] and triggers[message] + 1 or 1
+		local function OnCallback(a1, message, db, profile)
+			assert(db == testdb)
+			assert(a1 == nil)
+			if message == "OnProfileChanged" then
+				assert(profile == "Healers" or profile == "Tanks")
+			elseif message == "OnProfileDeleted" then
+				assert(profile == "Healers")
+			elseif message == "OnProfileCopied" then
+				assert(profile == "Healers")
+			elseif message == "OnNewProfile" then
+				assert(profile == "Healers" or profile == "Tanks")
+			elseif message == "OnProfileReset" then
+				assert(profile == "Tanks")
 			end
+			triggers[message] = triggers[message] and triggers[message] + 1 or 1
 		end
 
-		testdb:RegisterCallback("OnProfileChanged", OnCallback, "OnProfileChanged")
-		testdb:RegisterCallback("OnProfileDeleted", OnCallback, "OnProfileDeleted")
-		testdb:RegisterCallback("OnProfileCopied", OnCallback, "OnProfileCopied")
-		testdb:RegisterCallback("OnDatabaseReset", OnCallback, "OnDatabaseReset")
-		testdb:RegisterCallback("OnNewProfile", OnCallback, "OnNewProfile")
-		testdb:RegisterCallback("OnProfileReset", OnCallback, "OnProfileReset")
+		testdb:RegisterCallback("OnProfileChanged", OnCallback, nil)
+		testdb:RegisterCallback("OnProfileDeleted", OnCallback, nil)
+		testdb:RegisterCallback("OnProfileCopied", OnCallback, nil)
+		testdb:RegisterCallback("OnDatabaseReset", OnCallback, nil)
+		testdb:RegisterCallback("OnNewProfile", OnCallback, nil)
+		testdb:RegisterCallback("OnProfileReset", OnCallback, nil)
 		-- dbreset, change(on Healers)
 		testdb:ResetDB("Healers")
 		-- change(on Tanks), new (on Healers)

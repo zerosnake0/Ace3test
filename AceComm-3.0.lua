@@ -52,7 +52,7 @@ local function party_callbask(i, sent, textlen)
 	-- This can only be tested after modification of CTL
 	--error("callback error test, should not affect the final result")
 end
-function Ace3test:OnCommReceivedParty(msg,channel,sender)
+function Ace3test:OnCommReceivedParty(prefix,msg,channel,sender)
 	if msg == no_recv_msg then
 		self:LogError(msg)
 		return
@@ -61,39 +61,43 @@ function Ace3test:OnCommReceivedParty(msg,channel,sender)
 		self:LogError("PARTY", "test already ended")
 		return
 	end
-	if channel == "PARTY" then
-		if sender == myname then
-			party_recv_count = party_recv_count + 1
-			local l = strlen(msg)
-			local el = party_recv_count + strlen(middle_text) + 1
-			if l == el then
-				local ctl = strbyte(strsub(msg,1,1))
-				el = mod(party_recv_count-1,32)+1
-				if ctl == el then
-					if mod(party_recv_count,20) == 0 then
-						self:Print("PARTY", "<<", party_recv_count, '/', party_send_count)
-					end
-					if party_recv_count <= party_send_count then
-						if party_recv_count < party_total_count then
-							return
+	if prefix == prefix_party then
+		if channel == "PARTY" then
+			if sender == myname then
+				party_recv_count = party_recv_count + 1
+				local l = strlen(msg)
+				local el = party_recv_count + strlen(middle_text) + 1
+				if l == el then
+					local ctl = strbyte(strsub(msg,1,1))
+					el = mod(party_recv_count-1,32)+1
+					if ctl == el then
+						if mod(party_recv_count,20) == 0 then
+							self:Print("PARTY", "<<", party_recv_count, '/', party_send_count)
+						end
+						if party_recv_count <= party_send_count then
+							if party_recv_count < party_total_count then
+								return
+							else
+								self:Print("PARTY", "test end")
+								party_test_end = true
+							end
 						else
-							self:Print("PARTY", "test end")
-							party_test_end = true
+							self:LogError("PARTY", "received", party_recv_count, "more than sent", party_send_count)
 						end
 					else
-						self:LogError("PARTY", "received", party_recv_count, "more than sent", party_send_count)
+						self:LogError("PARTY", "control", ctl, "instead of", el)
 					end
 				else
-					self:LogError("PARTY", "control", ctl, "instead of", el)
+					self:LogError("PARTY", "length", l, "instead of", el)
 				end
 			else
-				self:LogError("PARTY", "length", l, "instead of", el)
+				self:LogError("PARTY", "received from", sender, "instead of", myname)
 			end
 		else
-			self:LogError("PARTY", "received from", sender, "instead of", myname)
+			self:LogError("received from", channel, "instead of", "PARTY")
 		end
 	else
-		self:LogError("received from", channel, "instead of", "PARTY")
+		self:LogError("received prefix", prefix, "instead of", prefix_party)
 	end
 	self:TestAceComm2()
 end
@@ -118,7 +122,7 @@ local function raid_callbask(_, sent, textlen)
 	-- This can only be tested after modification of CTL
 	--error("callback error test, should not affect the final result")
 end
-function Ace3test:OnCommReceivedRaid(msg,channel,sender)
+function Ace3test:OnCommReceivedRaid(prefix,msg,channel,sender)
 	if msg == no_recv_msg then
 		self:LogError(msg)
 		return
@@ -127,32 +131,36 @@ function Ace3test:OnCommReceivedRaid(msg,channel,sender)
 		self:LogError("RAID", "test already ended")
 		return
 	end
-	if channel == "RAID" then
-		if sender == myname then
-			raid_recv_count = raid_recv_count + 1
-			local l = strlen(msg)
-			if l == raid_recv_count then
-				if mod(raid_recv_count,20) == 0 then
-					self:Print("RAID", "<<", raid_recv_count, '/', raid_send_count)
-				end
-				if raid_recv_count <= raid_send_count then
-					if raid_recv_count < raid_total_count then
-						return
+	if prefix == prefix_raid then
+		if channel == "RAID" then
+			if sender == myname then
+				raid_recv_count = raid_recv_count + 1
+				local l = strlen(msg)
+				if l == raid_recv_count then
+					if mod(raid_recv_count,20) == 0 then
+						self:Print("RAID", "<<", raid_recv_count, '/', raid_send_count)
+					end
+					if raid_recv_count <= raid_send_count then
+						if raid_recv_count < raid_total_count then
+							return
+						else
+							self:Print("RAID", "test end")
+							raid_test_end = true
+						end
 					else
-						self:Print("RAID", "test end")
-						raid_test_end = true
+						self:LogError("RAID", "received", raid_recv_count, "more than sent", raid_send_count)
 					end
 				else
-					self:LogError("RAID", "received", raid_recv_count, "more than sent", raid_send_count)
+					self:LogError("RAID", "length", l, "instead of", raid_recv_count)
 				end
 			else
-				self:LogError("RAID", "length", l, "instead of", raid_recv_count)
+				self:LogError("RAID", "received from", sender, "instead of", myname)
 			end
 		else
-			self:LogError("RAID", "received from", sender, "instead of", myname)
+			self:LogError("received from", channel, "instead of", "RAID")
 		end
 	else
-		self:LogError("received from", channel, "instead of", "RAID")
+		self:LogError("received prefix", prefix, "instead of", prefix_raid)
 	end
 	self:TestAceComm2()
 end

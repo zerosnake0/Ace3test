@@ -5,8 +5,9 @@ local send_count
 local recv_count
 function Ace3test:CHAT_MSG_SYSTEM(...)
 	assert(event == "CHAT_MSG_SYSTEM")
-	assert(tgetn(arg) == 1)
-	assert(arg[i] == nil)
+	assert(tgetn(arg) == 2)
+	assert(arg[1] == nil)
+	assert(arg[2] == "CHAT_MSG_SYSTEM")
 	recv_count = recv_count + 1
 	if recv_count == send_count then
 		self:UnregisterEvent("CHAT_MSG_SYSTEM")
@@ -35,11 +36,13 @@ end
 
 local msg_event_name = "Ace3test"
 local no_recv_msg = "!!!This should not be received!!!"
-function Ace3test:OnMessage(first, second)
+function Ace3test:OnMessage(...)
 	recv_count = recv_count + 1
-	assert(first == nil)
-	assert(second ~= no_recv_msg)
-	assert(tonumber(second) == recv_count)
+	assert(tgetn(arg) == 3)
+	assert(arg[1] == nil)
+	assert(arg[2] == msg_event_name)
+	assert(arg[3] ~= no_recv_msg)
+	assert(tonumber(arg[3]) == recv_count)
 	if recv_count == send_count then
 		self:Print("> OnMessage Ended")
 		self:UnregisterMessage(msg_event_name)
