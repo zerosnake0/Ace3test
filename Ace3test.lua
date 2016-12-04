@@ -2,19 +2,18 @@ Ace3test = LibStub("AceAddon-3.0"):NewAddon("Ace3test",
 	"AceConsole-3.0",
 	"AceComm-3.0",
 	"AceEvent-3.0",
-	"AceBucket-3.0",
 	"AceConfig-3.0",
 	"AceConfigCmd-3.0",
 	"AceSerializer-3.0",
 	"AceHook-3.0",
-	"AceTimer-3.0"
+	"AceTimer-3.0",
+	"AceBucket-3.0"
 )
 
 local tests = {
 	"TestAceConsole",
 	"TestAceAddon",
 	"TestAceEvent",
-	"TestAceBucket",
 	"TestAceConfig",
 	"TestAceDB",
 	"TestAceDBOptions",
@@ -24,6 +23,7 @@ local tests = {
 	"TestAceHook",
 	"TestAceTab",			-- test by hand
 	"TestAceTimer",
+	"TestAceBucket",
 	"TestAceComm"			-- takes long time, make it last
 }
 
