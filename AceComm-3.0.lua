@@ -3,7 +3,7 @@ local assert, error = assert, error
 local floor = math.floor
 local tgetn = table.getn
 local strlen, strsub, strbyte = string.len, string.sub, string.byte
-local random = math.random
+local random, mod, floor = math.random, math.mod, math.floor
 local function print(...)
 	Ace3test:Print(unpack(arg))
 end
@@ -18,10 +18,6 @@ local function randchar(b,e)
 		i = random(b,e)
 	end
 	return string.char(i)
-end
-
-local function mod(a,b)
-	return a-floor(a/b)*b
 end
 
 local myname = UnitName("Player")
@@ -46,7 +42,7 @@ local function party_callbask(i, sent, textlen)
 	assert(party_send_count + 1 + strlen(middle_text) == textlen)
 	assert(party_send_count >= party_recv_count)
 	assert(party_send_count <= party_total_count)
-	if mod(party_send_count,20) == 0 then
+	if mod(party_send_count,20) < 1 then
 		Ace3test:Print("PARTY", ">>", party_send_count, '/', party_total_count)
 	end
 	-- This can only be tested after modification of CTL
@@ -69,9 +65,9 @@ function Ace3test:OnCommReceivedParty(prefix,msg,channel,sender)
 				local el = party_recv_count + strlen(middle_text) + 1
 				if l == el then
 					local ctl = strbyte(strsub(msg,1,1))
-					el = mod(party_recv_count-1,32)+1
+					el = floor(mod(party_recv_count-1,32))+1
 					if ctl == el then
-						if mod(party_recv_count,20) == 0 then
+						if mod(party_recv_count,20) < 1 then
 							self:Print("PARTY", "<<", party_recv_count, '/', party_send_count)
 						end
 						if party_recv_count <= party_send_count then
@@ -116,7 +112,7 @@ local function raid_callbask(_, sent, textlen)
 	assert(raid_send_count == textlen)
 	assert(raid_send_count >= raid_recv_count)
 	assert(raid_send_count <= raid_total_count)
-	if mod(raid_send_count,20) == 0 then
+	if mod(raid_send_count,20) < 1 then
 		Ace3test:Print("RAID", ">>", raid_send_count, '/', raid_total_count)
 	end
 	-- This can only be tested after modification of CTL
@@ -137,7 +133,7 @@ function Ace3test:OnCommReceivedRaid(prefix,msg,channel,sender)
 				raid_recv_count = raid_recv_count + 1
 				local l = strlen(msg)
 				if l == raid_recv_count then
-					if mod(raid_recv_count,20) == 0 then
+					if mod(raid_recv_count,20) < 1 then
 						self:Print("RAID", "<<", raid_recv_count, '/', raid_send_count)
 					end
 					if raid_recv_count <= raid_send_count then
@@ -207,7 +203,7 @@ function Ace3test:TestAceComm()
 
 			AceComm:SendCommMessage(prefix_raid, s, "RAID", nil, "ALERT", raid_callbask)
 
-			local j = mod(i-1,32)+1
+			local j = floor(mod(i-1,32))+1
 			local control = string.char(j)
 			AceComm:SendCommMessage(prefix_party, control..middle_text..s, "PARTY", nil, "BULK", party_callbask, i)
 		end

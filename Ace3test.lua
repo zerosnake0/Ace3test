@@ -6,7 +6,8 @@ Ace3test = LibStub("AceAddon-3.0"):NewAddon("Ace3test",
 	"AceConfig-3.0",
 	"AceConfigCmd-3.0",
 	"AceSerializer-3.0",
-	"AceHook-3.0"
+	"AceHook-3.0",
+	"AceTimer-3.0"
 )
 
 local tests = {
@@ -22,6 +23,7 @@ local tests = {
 	"TestAceSerializaer", 	-- this may freeze the PC for some seconds
 	"TestAceHook",
 	"TestAceTab",			-- test by hand
+	"TestAceTimer",
 	"TestAceComm"			-- takes long time, make it last
 }
 

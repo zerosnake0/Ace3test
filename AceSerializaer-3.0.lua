@@ -1,6 +1,4 @@
-local function mod(a,b)
-	return a-floor(a/b)*b
-end
+local mod = math.mod
 
 local strfind = string.find
 
