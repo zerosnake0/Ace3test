@@ -24,7 +24,8 @@ local tests = {
 	"TestAceTab",			-- test by hand
 	"TestAceTimer",
 	"TestAceBucket",
-	"TestAceComm"			-- takes long time, make it last
+	"TestAceComm",			-- takes long time, make it last
+	"TestAceGUI"
 }
 
 local tgetn = table.getn

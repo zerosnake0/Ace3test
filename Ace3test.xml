@@ -15,4 +15,5 @@
 	<Script file="AceHook-3.0.lua"/>
 	<Script file="AceTab-3.0.lua"/>
 	<Script file="AceTimer-3.0.lua"/>
+	<Script file="AceGUI-3.0.lua"/>
 </Ui>
