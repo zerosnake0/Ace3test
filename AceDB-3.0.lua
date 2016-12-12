@@ -88,8 +88,6 @@ function Ace3test:TestAceDB()
 
 		local t = {}
 		local testdb = LibStub("AceDB-3.0"):New(t)
-		dbg('-->'..tostring(t))
-		dbg(tostring(testdb))
 		local triggered = nil
 		local function OnProfileChanged(a1, event, db, profile)
 			assert(event == "OnProfileChanged")

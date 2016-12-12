@@ -94,9 +94,9 @@ end
 local color = {}
 local function color_get(info, ...)
 	-- coding not finished yet in AceConfigCmd
-	for k,v in arg do
-		dbg(k,v)
-	end
+	--for k,v in arg do
+	--	dbg(k,v)
+	--end
 end
 
 local function color_set(info, ...)

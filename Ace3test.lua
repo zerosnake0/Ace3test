@@ -21,11 +21,14 @@ local tests = {
 	"TestAceLocale31",
 	"TestAceSerializaer", 	-- this may freeze the PC for some seconds
 	"TestAceHook",
-	"TestAceTab",			-- test by hand
 	"TestAceTimer",
 	"TestAceBucket",
 	"TestAceComm",			-- takes long time, make it last
-	"TestAceGUI"
+
+	-- test by hand
+
+	--"TestAceTab",
+	--"TestAceGUI"
 }
 
 local tgetn = table.getn

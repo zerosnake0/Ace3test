@@ -3,7 +3,6 @@ local AceGUI = assert(LibStub("AceGUI-3.0"))
 local textStore
 local frame
 function Ace3test:TestAceGUI()
-	self:TestBegin("AceGUI")
 	if not frame then
 		frame = AceGUI:Create("Frame")
 		frame:SetTitle("Example Frame")
