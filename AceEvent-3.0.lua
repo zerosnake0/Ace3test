@@ -53,7 +53,7 @@ end
 function Ace3test:TestAceEvent2()
 	assert(recv_count == send_count)
 	
-	self:SendMessage(msg_event_name, no_recv_msg)
+	self:SendMessage(msg_event_name, 1, no_recv_msg)
 
 	self:Print("> RegisterMessage")
 	self:RegisterMessage(msg_event_name, "OnMessage", nil)
@@ -62,11 +62,11 @@ function Ace3test:TestAceEvent2()
 	send_count = 10
 	recv_count = 0
 	for i=1,send_count do
-		self:SendMessage(msg_event_name, i)
+		self:SendMessage(msg_event_name, 1, i)
 	end
 end
 
 function Ace3test:TestAceEvent3()
-	self:SendMessage(msg_event_name, no_recv_msg)
+	self:SendMessage(msg_event_name, 1, no_recv_msg)
 	self:TestEnd("AceEvent")
 end
